@@ -1,0 +1,40 @@
+{
+  // ---------------------------------------------------------------------------
+  // Formatting: Google Java Style, identical to `./mvnw spotless:apply`.
+  //
+  // On save, tools/format-java.sh runs the same google-java-format jar (and the
+  // same version, read from pom.xml) that Spotless uses, so the editor and
+  // `./mvnw verify` can never disagree. Requires the "Run on Save" extension
+  // (emeraldwalk.RunOnSave) — see .vscode/extensions.json.
+  // ---------------------------------------------------------------------------
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "\\.java$",
+        "cmd": "./tools/format-java.sh \"${file}\""
+      }
+    ]
+  },
+
+  // The built-in Java formatter is Eclipse-based and does NOT match
+  // google-java-format (it wraps arguments and enum constants differently), so it
+  // must not run on save or it would fight the build. It is still configured with
+  // Google's own profile for manual "Format Document" and for indent-as-you-type;
+  // saving afterwards corrects anything it gets wrong.
+  "java.format.settings.url": ".vscode/eclipse-java-google-style.xml",
+  "java.format.settings.profile": "GoogleStyle",
+
+  // google-java-format puts static imports first, then everything else in one
+  // ASCII-sorted block. The extension's default (java, javax, org, com) does not match.
+  "java.completion.importOrder": ["#", ""],
+  "java.saveActions.organizeImports": true,
+
+  "[java]": {
+    "editor.formatOnSave": false,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.rulers": [100],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true
+  }
+}
