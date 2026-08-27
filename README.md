@@ -50,16 +50,42 @@ Plan sessions across the week in a calendar view. When planning a session, I pic
 ### Prerequisites
 
 - JDK 25 (make sure `javac` is available, not just `java`)
-- Maven 3.9+
 - Docker + Docker Compose (used to run PostgreSQL locally)
+
+Maven itself is not needed — the wrapper (`./mvnw`) fetches the right version.
 
 ### Run locally
 
 ```bash
 git clone https://github.com/mgll/workout-tracker.git
 cd workout-tracker
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
+
+The application starts the PostgreSQL container defined in `docker-compose.yaml` itself and
+applies the Flyway migrations, which seed a starter exercise library. The database is
+left running when the application stops, so its data survives a restart; use
+`docker compose down` to stop it.
+
+```bash
+./mvnw test             # unit tests, plus integration tests against a throwaway PostgreSQL
+./mvnw spotless:apply   # reformat to Google Java Style
+./mvnw clean verify     # tests + formatting check
+./mvnw clean package    # build the executable jar
+```
+
+### Languages
+
+Exercise names and descriptions are stored per language. Responses follow the
+`Accept-Language` header and fall back to English when a language is missing:
+
+```bash
+curl -H 'Accept-Language: fr' localhost:8080/api/v1/exercises
+```
+
+Each response reports the language it actually used in `resolvedLocale`. The set of
+accepted languages is `app.i18n.supported-locales` in `application.properties` — adding
+one is a configuration change plus new rows, never a schema migration.
 
 ### API documentation
 
